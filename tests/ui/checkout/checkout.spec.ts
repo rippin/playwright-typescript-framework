@@ -6,7 +6,7 @@ import {
   CHECKOUT_PRODUCT,
   reachCheckout,
   VALID_CHECKOUT_CUSTOMER,
-} from '../../support/saucedemo/checkout.flow.js';
+} from '../../../src/support/saucedemo/checkout.flow.js';
 
 test.describe('Checkout', () => {
   test.beforeEach(async ({ page }) => {

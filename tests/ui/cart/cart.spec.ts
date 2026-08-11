@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 import { CartPage } from '../../../src/pages/cart.page.js';
-import { CHECKOUT_PRODUCT, reachCart } from '../../support/saucedemo/checkout.flow.js';
+import { CHECKOUT_PRODUCT, reachCart } from '../../../src/support/saucedemo/checkout.flow.js';
 
 test.describe('Cart', () => {
   test.beforeEach(async ({ page }) => {

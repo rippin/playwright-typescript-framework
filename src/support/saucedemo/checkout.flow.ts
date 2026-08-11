@@ -1,11 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { CartPage } from '../../../src/pages/cart.page.js';
+import { CartPage } from '../../pages/cart.page.js';
 import {
   CheckoutInformationPage,
   type CheckoutCustomer,
-} from '../../../src/pages/checkout-information.page.js';
-import { InventoryPage } from '../../../src/pages/inventory.page.js';
+} from '../../pages/checkout-information.page.js';
+import { InventoryPage } from '../../pages/inventory.page.js';
 
 export const CHECKOUT_PRODUCT = 'Sauce Labs Backpack';
 
