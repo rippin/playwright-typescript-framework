@@ -8,7 +8,7 @@ import { InventoryPage } from '../../../src/pages/inventory.page.js';
 import {
   CHECKOUT_PRODUCT,
   VALID_CHECKOUT_CUSTOMER,
-} from '../../support/saucedemo/checkout.flow.js';
+} from '../../../src/support/saucedemo/checkout.flow.js';
 
 test('shopper can complete a purchase', { tag: ['@smoke', '@regression'] }, async ({ page }) => {
   const inventoryPage = new InventoryPage(page);
