@@ -66,7 +66,7 @@ jobs:
 
       - name: Upload Playwright artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: chromium-smoke-${{ github.run_attempt }}
           path: |
@@ -103,7 +103,7 @@ jobs:
 
       - name: Upload API artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: deterministic-api-${{ github.run_attempt }}
           path: |
@@ -144,7 +144,7 @@ jobs:
 
       - name: Upload accessibility artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: high-risk-accessibility-${{ github.run_attempt }}
           path: |
