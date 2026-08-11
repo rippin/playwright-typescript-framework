@@ -38,17 +38,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install browser
+      - name: Install browsers
         if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') != '' }}
         env:
           PROJECT: ${{ matrix.project }}
         run: |
           case "$PROJECT" in
-            chromium|mobile-chrome) BROWSER=chromium ;;
-            firefox) BROWSER=firefox ;;
-            webkit) BROWSER=webkit ;;
+            chromium|mobile-chrome)
+              npx playwright install --with-deps chromium
+              ;;
+            firefox)
+              npx playwright install --with-deps chromium firefox
+              ;;
+            webkit)
+              npx playwright install --with-deps chromium webkit
+              ;;
           esac
-          npx playwright install --with-deps "$BROWSER"
 
       - name: Run regression project
         if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') != '' }}
