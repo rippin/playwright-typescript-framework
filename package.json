@@ -42,5 +42,10 @@
     "typescript": "7.0.2",
     "vitest": "4.1.10",
     "zod": "4.4.3"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "fsevents@2.3.2": true,
+    "fsevents@2.3.3": true
   }
 }
