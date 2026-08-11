@@ -1,0 +1,46 @@
+{
+  "name": "playwright-typescript-automation-framework",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Portfolio-quality UI and API automation framework built with Playwright and TypeScript.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11 <12"
+  },
+  "packageManager": "npm@11.18.0",
+  "scripts": {
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint --type-aware --deny-warnings --report-unused-disable-directives",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run --passWithNoTests",
+    "quality": "npm run format:check && npm run lint && npm run typecheck && npm run test:unit",
+    "test:smoke": "playwright test --project=chromium --grep @smoke",
+    "test:ui": "playwright test --project=chromium",
+    "test:api": "playwright test --project=api",
+    "test:a11y": "playwright test --project=a11y",
+    "test:a11y:high-risk": "playwright test --project=a11y --grep @high-risk",
+    "test:visual": "playwright test --project=visual --workers=1",
+    "test:cross-browser": "playwright test --project=chromium --project=firefox --project=webkit",
+    "test:mobile": "playwright test --project=mobile-chrome",
+    "test:prod-safe": "playwright test --project=chromium --grep @prod-safe",
+    "report:show": "playwright show-report"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.12.1",
+    "@faker-js/faker": "10.5.0",
+    "@playwright/test": "1.61.1",
+    "@types/node": "24.13.3",
+    "@vitest/coverage-v8": "4.1.10",
+    "dotenv": "17.4.2",
+    "eslint-plugin-playwright": "2.11.0",
+    "oxfmt": "0.61.0",
+    "oxlint": "1.76.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10",
+    "zod": "4.4.3"
+  }
+}

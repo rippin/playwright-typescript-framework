@@ -1,0 +1,154 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run quality gate
+        run: npm run quality
+
+  chromium-smoke:
+    name: Chromium smoke
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') != '' }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Chromium smoke tests
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') != '' }}
+        run: npm run test:smoke
+
+      - name: Report scaffold-only state
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') == '' }}
+        run: echo "UI smoke tests have not been implemented yet."
+
+      - name: Upload Playwright artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: chromium-smoke-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  deterministic-api:
+    name: Deterministic API checks
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run API tests
+        if: ${{ hashFiles('tests/api/**/*.spec.ts') != '' }}
+        run: npm run test:api
+
+      - name: Report scaffold-only state
+        if: ${{ hashFiles('tests/api/**/*.spec.ts') == '' }}
+        run: echo "API tests have not been implemented yet."
+
+      - name: Upload API artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: deterministic-api-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  high-risk-accessibility:
+    name: High-risk accessibility
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        if: ${{ hashFiles('tests/ui/**/*.a11y.spec.ts') != '' }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Run high-risk accessibility tests
+        if: ${{ hashFiles('tests/ui/**/*.a11y.spec.ts') != '' }}
+        run: npm run test:a11y:high-risk
+
+      - name: Report scaffold-only state
+        if: ${{ hashFiles('tests/ui/**/*.a11y.spec.ts') == '' }}
+        run: echo "Accessibility tests have not been implemented yet."
+
+      - name: Upload accessibility artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: high-risk-accessibility-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

@@ -1,0 +1,106 @@
+name: Deployment verification
+
+on:
+  workflow_call:
+    inputs:
+      target_environment:
+        description: GitHub environment and test target
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: Environment to verify
+        required: true
+        type: choice
+        options:
+          - test
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deployment-verification-${{ inputs.target_environment }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Verify ${{ inputs.target_environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment:
+      name: ${{ inputs.target_environment }}
+      deployment: false
+    env:
+      TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
+      TEST_ENV: ${{ inputs.target_environment }}
+      SAUCE_BASE_URL: ${{ vars.SAUCE_BASE_URL || 'https://www.saucedemo.com' }}
+      SAUCE_USERNAME: ${{ vars.SAUCE_USERNAME || 'standard_user' }}
+      SAUCE_PASSWORD: ${{ vars.SAUCE_PASSWORD || 'secret_sauce' }}
+      BOOKER_BASE_URL: ${{ vars.BOOKER_BASE_URL || 'https://restful-booker.herokuapp.com' }}
+      BOOKER_USERNAME: ${{ vars.BOOKER_USERNAME || 'admin' }}
+      BOOKER_PASSWORD: ${{ vars.BOOKER_PASSWORD || 'password123' }}
+    steps:
+      - name: Validate requested environment
+        run: |
+          case "$TARGET_ENVIRONMENT" in
+            test|staging|production) ;;
+            *)
+              echo "Unsupported target environment: $TARGET_ENVIRONMENT" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install required browsers
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') != '' }}
+        run: |
+          if [ "$TARGET_ENVIRONMENT" = "staging" ]; then
+            npx playwright install --with-deps chromium firefox webkit
+          else
+            npx playwright install --with-deps chromium
+          fi
+
+      - name: Run environment-appropriate verification
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') != '' }}
+        run: |
+          case "$TARGET_ENVIRONMENT" in
+            test)
+              npm run test:smoke
+              npm run test:ui -- --grep @regression
+              ;;
+            staging)
+              npm run test:cross-browser -- --grep @smoke
+              ;;
+            production)
+              npm run test:prod-safe
+              ;;
+          esac
+
+      - name: Report scaffold-only state
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') == '' }}
+        run: echo "Deployment verification tests have not been implemented yet."
+
+      - name: Upload verification artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: deployment-${{ inputs.target_environment }}-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

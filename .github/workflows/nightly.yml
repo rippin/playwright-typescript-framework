@@ -1,0 +1,159 @@
+name: Nightly test matrix
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    name: Regression - ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - chromium
+          - firefox
+          - webkit
+          - mobile-chrome
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install browser
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') != '' }}
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          case "$PROJECT" in
+            chromium|mobile-chrome) BROWSER=chromium ;;
+            firefox) BROWSER=firefox ;;
+            webkit) BROWSER=webkit ;;
+          esac
+          npx playwright install --with-deps "$BROWSER"
+
+      - name: Run regression project
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') != '' }}
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          if [ "$PROJECT" = "mobile-chrome" ]; then
+            npx playwright test --project="$PROJECT" --grep @smoke
+          else
+            npx playwright test --project="$PROJECT" --grep @regression
+          fi
+
+      - name: Report scaffold-only state
+        if: ${{ hashFiles('tests/ui/**/*.spec.ts', '!tests/ui/**/*.a11y.spec.ts', '!tests/ui/**/*.visual.spec.ts') == '' }}
+        run: echo "UI regression tests have not been implemented yet."
+
+      - name: Upload project artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: nightly-${{ matrix.project }}-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  specialized:
+    name: ${{ matrix.project }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - api
+          - a11y
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        if: ${{ matrix.project == 'a11y' && hashFiles('tests/ui/**/*.a11y.spec.ts') != '' }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Run specialized project
+        if: ${{ (matrix.project == 'api' && hashFiles('tests/api/**/*.spec.ts') != '') || (matrix.project == 'a11y' && hashFiles('tests/ui/**/*.a11y.spec.ts') != '') }}
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: npx playwright test --project="$PROJECT"
+
+      - name: Report scaffold-only state
+        if: ${{ (matrix.project == 'api' && hashFiles('tests/api/**/*.spec.ts') == '') || (matrix.project == 'a11y' && hashFiles('tests/ui/**/*.a11y.spec.ts') == '') }}
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: echo "$PROJECT tests have not been implemented yet."
+
+      - name: Upload project artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: nightly-${{ matrix.project }}-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  visual:
+    name: Visual
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.1-noble@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run visual tests
+        if: ${{ hashFiles('tests/ui/**/*.visual.spec.ts') != '' }}
+        run: npm run test:visual
+
+      - name: Report scaffold-only state
+        if: ${{ hashFiles('tests/ui/**/*.visual.spec.ts') == '' }}
+        run: echo "Visual tests have not been implemented yet."
+
+      - name: Upload visual artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: nightly-visual-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

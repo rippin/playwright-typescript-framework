@@ -1,0 +1,24 @@
+node_modules/
+
+# Environment overrides and secrets
+.env
+.env.*
+!.env.example
+
+# Playwright and test output
+blob-report/
+playwright-report/
+test-results/
+coverage/
+reports/private/
+
+# Generated authentication state
+playwright/.auth/
+
+# Tooling and editor output
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.DS_Store
+*.log
