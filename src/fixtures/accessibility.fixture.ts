@@ -1,5 +1,6 @@
 import { AxeBuilder } from '@axe-core/playwright';
-import { expect, test as base } from '@playwright/test';
+
+import { expect, test as base } from './ui.fixture.js';
 
 interface AccessibilityFixtures {
   makeAxeBuilder: () => AxeBuilder;

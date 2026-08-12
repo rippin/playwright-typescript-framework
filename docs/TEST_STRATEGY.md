@@ -67,6 +67,16 @@ plain setup functions and implemented using the same page objects as the test bo
 - Flaky tests are fixed or quarantined with ownership and an explicit expiration; retries are not a
   substitute for diagnosis.
 
+## Failure Diagnostics
+
+- An automatic UI fixture records uncaught page errors and failed network requests.
+- Diagnostics are evidence only and never change the test result.
+- Evidence is attached as sanitized JSON only when a test fails unexpectedly.
+- Request and response headers and bodies are never collected.
+- URLs exclude credentials, query parameters, and fragments; common secret assignments are
+  redacted before attachment.
+- Playwright traces, screenshots, and videos remain the primary detailed debugging artifacts.
+
 ## Visual Policy
 
 - Visual tests run on pinned Linux Chromium.

@@ -1,5 +1,4 @@
-import { expect, test } from '@playwright/test';
-
+import { expect, test } from '../../../src/fixtures/ui.fixture.js';
 import { environment } from '../../../src/config/environment.js';
 import { LoginPage } from '../../../src/pages/login.page.js';
 
