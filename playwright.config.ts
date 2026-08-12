@@ -14,6 +14,7 @@ const specializedUiTests = [accessibilityTests, visualTests];
 export default defineConfig({
   testDir: './tests',
   outputDir: 'test-results/artifacts',
+  updateSnapshots: 'none',
   timeout: 30_000,
   expect: {
     timeout: 5_000,

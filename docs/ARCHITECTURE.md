@@ -21,6 +21,7 @@ created before reuse exists.
 │   ├── reporting/      # Sanitized reporting and dashboard preparation
 │   └── support/        # Explicit prerequisite UI setup functions
 ├── tests/
+│   ├── __screenshots__/ # Approved visual baselines mirroring their owning test paths
 │   ├── api/            # Restful Booker tests
 │   ├── setup/          # Authentication setup projects
 │   ├── ui/             # Functional, accessibility, and visual tests grouped by feature
@@ -31,6 +32,10 @@ created before reuse exists.
 Specialized UI checks stay beside the functional coverage for the same feature and use explicit
 filename suffixes: `*.a11y.spec.ts` and `*.visual.spec.ts`. Playwright projects select those files
 without duplicating them in the functional browser projects.
+
+The `tests/` tree contains executable tests and assets owned by those tests. Approved visual
+baselines are committed under `tests/__screenshots__/`; temporary actual and difference images are
+written to ignored test output directories.
 
 Directories are reserved in this scaffold. Implementations will be introduced in reviewed vertical
 slices.

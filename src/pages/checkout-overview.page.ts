@@ -2,6 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 
 export class CheckoutOverviewPage {
   readonly title: Locator;
+  readonly orderSummary: Locator;
   readonly subtotal: Locator;
   readonly tax: Locator;
   readonly total: Locator;
@@ -10,6 +11,7 @@ export class CheckoutOverviewPage {
 
   constructor(private readonly page: Page) {
     this.title = page.getByTestId('title');
+    this.orderSummary = page.getByTestId('checkout-summary-container');
     this.subtotal = page.getByTestId('subtotal-label');
     this.tax = page.getByTestId('tax-label');
     this.total = page.getByTestId('total-label');
