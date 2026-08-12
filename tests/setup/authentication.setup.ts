@@ -1,9 +1,8 @@
 import { mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 
-import { expect, test as setup } from '@playwright/test';
-
 import { environment } from '../../src/config/environment.js';
+import { expect, test as setup } from '../../src/fixtures/ui.fixture.js';
 import { LoginPage } from '../../src/pages/login.page.js';
 
 const authenticationState = resolve('playwright/.auth/saucedemo.json');

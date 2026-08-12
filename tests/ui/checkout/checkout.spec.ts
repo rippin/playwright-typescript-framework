@@ -1,5 +1,4 @@
-import { expect, test } from '@playwright/test';
-
+import { expect, test } from '../../../src/fixtures/ui.fixture.js';
 import { CheckoutInformationPage } from '../../../src/pages/checkout-information.page.js';
 import { CheckoutOverviewPage } from '../../../src/pages/checkout-overview.page.js';
 import {

@@ -1,5 +1,4 @@
-import { expect, test } from '@playwright/test';
-
+import { expect, test } from '../../../src/fixtures/ui.fixture.js';
 import { CartPage } from '../../../src/pages/cart.page.js';
 import { CHECKOUT_PRODUCT, reachCart } from '../../../src/support/saucedemo/checkout.flow.js';
 
