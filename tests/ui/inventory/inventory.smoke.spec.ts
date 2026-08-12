@@ -4,7 +4,7 @@ import { InventoryPage } from '../../../src/pages/inventory.page.js';
 
 test(
   'authenticated user can view inventory',
-  { tag: ['@smoke', '@regression'] },
+  { tag: ['@smoke', '@regression', '@prod-safe'] },
   async ({ page }) => {
     const inventoryPage = new InventoryPage(page);
 
