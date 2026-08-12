@@ -3,12 +3,18 @@ import { type Locator, type Page } from '@playwright/test';
 export class InventoryPage {
   readonly title: Locator;
   readonly inventoryList: Locator;
+  readonly menuButton: Locator;
+  readonly menuCloseButton: Locator;
+  readonly navigationMenu: Locator;
   readonly shoppingCartLink: Locator;
   readonly shoppingCartBadge: Locator;
 
   constructor(private readonly page: Page) {
     this.title = page.getByTestId('title');
     this.inventoryList = page.getByTestId('inventory-list');
+    this.menuButton = page.getByRole('button', { name: 'Open Menu' });
+    this.menuCloseButton = page.getByRole('button', { name: 'Close Menu' });
+    this.navigationMenu = page.getByRole('navigation');
     this.shoppingCartLink = page.getByTestId('shopping-cart-link');
     this.shoppingCartBadge = page.getByTestId('shopping-cart-badge');
   }
@@ -31,5 +37,9 @@ export class InventoryPage {
 
   async openCart(): Promise<void> {
     await this.shoppingCartLink.click();
+  }
+
+  async openMenu(): Promise<void> {
+    await this.menuButton.click();
   }
 }
