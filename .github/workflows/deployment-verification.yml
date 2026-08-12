@@ -30,6 +30,9 @@ jobs:
     name: Verify ${{ inputs.target_environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: read
+      id-token: write
     environment:
       name: ${{ inputs.target_environment }}
       deployment: false

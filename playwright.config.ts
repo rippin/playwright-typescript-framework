@@ -29,6 +29,14 @@ export default defineConfig({
         ['line'],
         ['junit', { outputFile: 'test-results/junit/results.xml' }],
         ['html', { open: 'never', outputFolder: 'playwright-report' }],
+        [
+          '@flakiness/playwright',
+          {
+            flakinessProject: 'Portfolio-Demo/playwright-typescript-framework',
+            open: 'never',
+            outputFolder: 'test-results/flakiness',
+          },
+        ],
       ]
     : [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
   snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}-{projectName}{ext}',

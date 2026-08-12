@@ -26,6 +26,7 @@ useful evidence, and selecting the right tests at the right delivery stage.
 | Diagnostics               | Retry traces, failure screenshots/video, and sanitized page-error and network-failure attachments            |
 | Framework unit tests      | Deterministic Vitest coverage for schemas, data builders, URL sanitization, and evidence redaction           |
 | Delivery pipelines        | Pull-request gates, deployment verification, production-safe allowlisting, and a nightly browser matrix      |
+| Test analytics            | Flakiness.io history uploaded from Playwright CI jobs through secretless GitHub OIDC                         |
 | Supply-chain protection   | Dependabot, dependency review, CodeQL, npm audit, immutable Action SHAs, and restricted workflow permissions |
 | Modern TypeScript tooling | Strict TypeScript 7, type-aware Oxlint, Oxfmt, Node.js 24, and reproducible npm installs                     |
 
@@ -108,6 +109,7 @@ omitted while the suite is small enough that runner and browser startup would ou
   parameters, and fragments, and common secret assignments are redacted.
 - Request and response headers and bodies are not collected by the diagnostic fixture.
 - HTML, JUnit, and test artifacts are retained by CI for 14 days unless a run is canceled.
+- CI also publishes Playwright results and attachments to Flakiness.io for historical analysis.
 
 ## Accessibility and Visual Testing
 
@@ -176,6 +178,8 @@ npx playwright install firefox webkit
 - Visual baselines require human review and cannot update implicitly.
 - Future AI triage is advisory only and cannot change results, code, issues, deployments, or visual
   baselines.
+- Flakiness.io attachment uploads are approved for the public demo targets only; private systems
+  require a separate data-security review.
 
 See [SECURITY.md](./SECURITY.md) and the [AI safety model](./docs/AI_SAFETY.md) for the complete
 boundaries.

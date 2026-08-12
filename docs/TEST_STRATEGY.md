@@ -77,6 +77,18 @@ plain setup functions and implemented using the same page objects as the test bo
   redacted before attachment.
 - Playwright traces, screenshots, and videos remain the primary detailed debugging artifacts.
 
+## Test Analytics
+
+- CI Playwright runs publish historical results to Flakiness.io through GitHub OIDC; no static
+  access token is stored.
+- OIDC permission is granted only to jobs that execute Playwright.
+- The Flakiness reporter supplements the Playwright HTML and JUnit reporters rather than replacing
+  them.
+- Each matrix invocation is reported separately and associated with the same Git commit.
+- Flakiness.io receives Playwright attachments, including failure screenshots, videos, traces, and
+  sanitized diagnostic JSON. This external upload is approved only for the repository's public demo
+  targets; private or production systems require a separate data-security review.
+
 ## Visual Policy
 
 - Visual tests run on pinned Linux Chromium.
