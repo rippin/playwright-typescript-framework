@@ -67,3 +67,25 @@ plain setup functions and implemented using the same page objects as the test bo
 - Baseline changes require human review.
 - Visual tests remain outside the pull-request gate while the target is an uncontrolled public
   application.
+- Playwright never creates or replaces baselines implicitly; snapshot updates require the explicit
+  `--update-snapshots` option.
+
+### Updating Visual Baselines
+
+Generate baselines with the same pinned Linux image used by the nightly visual job. The isolated
+Docker volume prevents Linux dependencies from replacing the host `node_modules` directory:
+
+```bash
+docker run --rm --ipc=host \
+  -v "$PWD":/work \
+  -v automation-frameworks-visual-node-modules:/work/node_modules \
+  -w /work \
+  -e CI=true \
+  mcr.microsoft.com/playwright:v1.61.1-noble@sha256:5b8f294aff9041b7191c34a4bab3ac270157a28774d4b0660e9743297b697e48 \
+  bash -lc 'npm ci && npx playwright test --project=visual --update-snapshots'
+
+docker volume rm automation-frameworks-visual-node-modules
+```
+
+Review every changed image under `tests/__screenshots__/` before committing it. Normal local and CI
+runs compare against committed baselines and fail when a baseline is missing.
