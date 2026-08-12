@@ -49,6 +49,15 @@ plain setup functions and implemented using the same page objects as the test bo
 | Production deployment | Minimal `@prod-safe` smoke, health checks, monitoring, and rollback signals                                                           |
 | Nightly               | Full regression, complete cross-browser matrix, mobile, and representative accessibility and visual coverage                          |
 
+## Production-Safe Policy
+
+- Production verification is an explicit allowlist selected by the `@prod-safe` tag.
+- Tests may authenticate and read application state but must not create, update, or delete business
+  data.
+- The current production-safe check logs in and verifies inventory availability without changing
+  cart or account state.
+- Smoke or regression classification alone never authorizes a test to run against production.
+
 ## Flaky-Test Policy
 
 - CI permits one retry to collect evidence.
