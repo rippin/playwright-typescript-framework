@@ -33,7 +33,7 @@
     "@faker-js/faker": "10.6.0",
     "@flakiness/playwright": "2.0.2",
     "@playwright/test": "1.63.0",
-    "@types/node": "24.13.3",
+    "@types/node": "26.6.5",
     "@vitest/coverage-v8": "4.1.10",
     "dotenv": "17.4.2",
     "eslint-plugin-playwright": "2.12.0",
