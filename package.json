@@ -29,20 +29,20 @@
     "report:show": "playwright show-report"
   },
   "devDependencies": {
-    "@axe-core/playwright": "4.13.0",
+    "@axe-core/playwright": "4.14.0",
     "@faker-js/faker": "10.6.0",
-    "@flakiness/playwright": "2.0.2",
-    "@playwright/test": "1.63.0",
+    "@flakiness/playwright": "2.0.3",
+    "@playwright/test": "1.64.1",
     "@types/node": "24.13.3",
     "@vitest/coverage-v8": "4.1.10",
     "dotenv": "17.4.2",
-    "eslint-plugin-playwright": "2.12.0",
-    "oxfmt": "0.68.0",
-    "oxlint": "1.83.0",
-    "oxlint-tsgolint": "7.0.2002",
+    "eslint-plugin-playwright": "2.12.1",
+    "oxfmt": "0.74.0",
+    "oxlint": "1.89.0",
+    "oxlint-tsgolint": "7.0.2005",
     "typescript": "7.0.2",
     "vitest": "4.1.10",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "allowScripts": {
     "esbuild@0.25.12": true,
